@@ -31,6 +31,13 @@ test:
 server:
 	go run main.go
 
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down
+
+
 # mock:
 # 	mockgen -package mockdb -destination db/mock/store.go github.com/techschool/simplebank/db/sqlc Store
 # 	mockgen -package mockwk -destination worker/mock/distributor.go github.com/techschool/simplebank/worker TaskDistributor
