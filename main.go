@@ -1,4 +1,9 @@
-// package main
+package main
+
+import (
+	"github.com/golang-migrate/migrate"
+	"github.com/rs/zerolog/log"
+)
 
 // import (
 // 	"database/sql"
@@ -50,54 +55,24 @@
 
 // }
 
-// func runDBMigration(migrationURL string, dbSource string) {
-// 	migration, err := migrate.New(migrationURL, dbSource)
-// 	if err != nil {
-// 		log.Fatal().Msgf("cannot create new migrate instance: %w", err)
-// 	}
-// 	if err = migration.Up(); err != nil && err != migrate.ErrNoChange {
-// 		log.Fatal().Msg("failed to run migration up:")
-// 	}
-// 	log.Info().Msg("db migrated successfully")
-// }
-
-// // func runGinServer(config util.Config) {
-// // 	server, err := api.NewServer(config)
-// // 	if err != nil {
-// // 		log.Fatal().Msg("cannot create server")
-// // 	}
-// // 	err = server.Start(config.HTTPServerAddress)
-// // 	if err != nil {
-// // 		log.Fatal().Msg("cannot start server")
-// // 	}
-// // }
-
-package main
-
-import (
-	"fmt"
-	"regexp"
-)
-
-func extractNumerals(input string) string {
-	// Create a regular expression to match numerals
-	re := regexp.MustCompile("[0-9]+")
-
-	// Find all matches in the input string
-	matches := re.FindAllString(input, -1)
-
-	// Concatenate the matched numerals into a single string
-	result := ""
-	for _, match := range matches {
-		result += match
+func runDBMigration(migrationURL string, dbSource string) {
+	migration, err := migrate.New(migrationURL, dbSource)
+	if err != nil {
+		log.Fatal().Msgf("cannot create new migrate instance: %w", err)
 	}
-
-	return result
+	if err = migration.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal().Msg("failed to run migration up:")
+	}
+	log.Info().Msg("db migrated successfully")
 }
 
-func main() {
-	inputString := "dqfournine5four2jmlqcgv"
-	numerals := extractNumerals(inputString)
-
-	fmt.Println("Numerals:", numerals)
-}
+// func runGinServer(config util.Config) {
+// 	server, err := api.NewServer(config)
+// 	if err != nil {
+// 		log.Fatal().Msg("cannot create server")
+// 	}
+// 	err = server.Start(config.HTTPServerAddress)
+// 	if err != nil {
+// 		log.Fatal().Msg("cannot start server")
+// 	}
+// }
