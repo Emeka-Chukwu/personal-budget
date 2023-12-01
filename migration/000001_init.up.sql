@@ -9,7 +9,7 @@ CREATE TABLE "users" (
   "password" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz NOT NULL DEFAULT now(),
-  "is_suspended" boolean,
+  "is_suspended" boolean NOT NULL DEFAULT false,
   PRIMARY KEY ("id")
 );
 
@@ -23,6 +23,15 @@ CREATE TABLE "accounts" (
   "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")
 );
+
+-- CREATE TABLE "wallets" (
+--   "id" uuid DEFAULT uuid_generate_v4(),
+--   "user_id" uuid,
+--   "balance" int,
+--   "created_at" timestamptz NOT NULL DEFAULT now(),
+--   "updated_at" timestamptz NOT NULL DEFAULT now(),
+--   PRIMARY KEY ("id")
+-- );
 
 CREATE TABLE "sessions" (
   "id" uuid DEFAULT uuid_generate_v4(),
@@ -89,3 +98,6 @@ ALTER TABLE "verifications" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id"
 ALTER TABLE "payment_pins" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "scheduled_payments" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+
+-- ALTER TABLE "wallets" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

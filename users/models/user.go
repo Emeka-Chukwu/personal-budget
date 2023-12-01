@@ -1,6 +1,11 @@
 package model_user
 
-import "personal-budget/shared"
+import (
+	"personal-budget/shared"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
 	shared.Model
@@ -22,6 +27,17 @@ type UserResponse struct {
 	Bvn        string `json:"bvn"`
 	ProfileUrl string `json:"profile_url"`
 	IsVerified bool   `json:"is_verified"`
+}
+
+type UserRegisterResponse struct {
+	UserResponse
+	AccessToken      string
+	RefreshToken     string
+	AccessExpiredAt  time.Time
+	AccessIssuedAt   time.Time
+	RefreshExpiredAt time.Time
+	RefreshIssuedAt  time.Time
+	SessionId        uuid.UUID
 }
 
 type UserLogin struct {
