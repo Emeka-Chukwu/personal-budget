@@ -22,6 +22,8 @@ type userhandler struct {
 // LoginUser implements UserHandler.
 func (handler *userhandler) LoginUser(ctx *gin.Context) {
 	req := util.GetBody[model_user.UserLogin](ctx)
+	req.ClientIP = ctx.ClientIP()
+	req.UserAgent = ctx.GetHeader("User-Agent")
 	resp, err := handler.usecase.Login(req)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -33,6 +35,8 @@ func (handler *userhandler) LoginUser(ctx *gin.Context) {
 // RegisterUser implements UserHandler.
 func (handler *userhandler) RegisterUser(ctx *gin.Context) {
 	req := util.GetBody[model_user.User](ctx)
+	req.ClientIP = ctx.ClientIP()
+	req.UserAgent = ctx.GetHeader("User-Agent")
 	resp, err := handler.usecase.Register(req)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {

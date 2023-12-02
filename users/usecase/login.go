@@ -2,7 +2,6 @@ package usecase_user
 
 import (
 	"errors"
-	"fmt"
 	model_user "personal-budget/users/models"
 	"personal-budget/util"
 )
@@ -42,10 +41,10 @@ func (us *usecaseuser) Login(data model_user.UserLogin) (model_user.UserRegister
 		UserID:    user.ID,
 		Refresh:   refreshToken,
 		IsBlock:   false,
-		UserAgent: "add the agent",
-		ClientIP:  "add the client",
+		UserAgent: data.UserAgent,
+		ClientIP:  data.ClientIP,
 	}
-	fmt.Println(sess)
+	us.repo.CreateSession(sess)
 	// create your wallet here
 	// go func() {
 

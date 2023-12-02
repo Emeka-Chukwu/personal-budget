@@ -1,7 +1,6 @@
 package usecase_user
 
 import (
-	"fmt"
 	model_user "personal-budget/users/models"
 	"personal-budget/util"
 )
@@ -27,14 +26,16 @@ func (us *usecaseuser) Register(data model_user.User) (model_user.UserRegisterRe
 		return model_user.UserRegisterResponse{}, err
 	}
 	//// set the values of session
+	// Retrieve User-Agent from request headers
+
 	sess := model_user.Session{
 		UserID:    user.ID,
 		Refresh:   refreshToken,
 		IsBlock:   false,
-		UserAgent: "add the agent",
-		ClientIP:  "add the client",
+		UserAgent: data.UserAgent,
+		ClientIP:  data.ClientIP,
 	}
-	fmt.Println(sess)
+	us.repo.CreateSession(sess)
 	// create your wallet here
 	// go func() {
 

@@ -23,6 +23,7 @@ type UserAuthentication interface {
 	// twoFactorAuth(data any)
 	GetUserById(id uuid.UUID) (model_user.UserResponse, error)
 	Register(data model_user.User) (model_user.UserResponse, error)
+	CreateSession(data model_user.Session) (model_user.Session, error)
 	Update(id uuid.UUID, data model_user.User) (model_user.UserResponse, error)
 	GetUserByEmail(email string) (model_user.UserResponse, error)
 }

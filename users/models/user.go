@@ -16,6 +16,8 @@ type User struct {
 	Password   string `json:"password" validate:"required,min=7"`
 	Bvn        string `json:"bvn"`
 	ProfileUrl string `json:"profile_url"`
+	UserAgent  string
+	ClientIP   string
 }
 
 type UserResponse struct {
@@ -43,6 +45,8 @@ type UserRegisterResponse struct {
 }
 
 type UserLogin struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=7"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required,min=7"`
+	UserAgent string
+	ClientIP  string
 }
