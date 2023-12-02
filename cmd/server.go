@@ -4,6 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	repositories_account "personal-budget/accounts/repositories"
+	usecase_account "personal-budget/accounts/usecase"
+	account_v1 "personal-budget/accounts/v1"
+	"personal-budget/middleware"
 	"personal-budget/token"
 	repositories_users "personal-budget/users/repositories"
 	usecase_user "personal-budget/users/usecase"
@@ -55,9 +59,16 @@ func (server *Server) setupRouter() {
 		})
 	})
 	groupRouter := router.Group("/api/v1")
+	//////user
 	userRepo := repositories_users.NewUserAuths(server.conn)
 	userCase := usecase_user.NewUsecaseUser(server.config, server.tokenMaker, userRepo)
-	// router.Use(authMiddleware(server.tokenMaker))
 	users_v1.NewUserRoutes(groupRouter, userCase)
+
+	/////
+	router.Use(middleware.AuthMiddleware(server.tokenMaker))
+	acctRepo := repositories_account.NewAccountRepository(server.conn)
+	acctCase := usecase_account.NewAccountUsecase(server.tokenMaker, acctRepo, server.config)
+	account_v1.NewAccountsRoutes(groupRouter, acctCase)
+
 	server.router = router
 }
