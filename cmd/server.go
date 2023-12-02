@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"personal-budget/token"
+	repositories_users "personal-budget/users/repositories"
+	usecase_user "personal-budget/users/usecase"
+	users_v1 "personal-budget/users/v1"
 	"personal-budget/util"
 
 	"github.com/gin-gonic/gin"
@@ -51,11 +54,10 @@ func (server *Server) setupRouter() {
 			"message": fmt.Sprintf("Personal Budget app ruuning at %s", server.config.HTTPServerAddress),
 		})
 	})
-
+	groupRouter := router.Group("/api/v1")
+	userRepo := repositories_users.NewUserAuths(server.conn)
+	userCase := usecase_user.NewUsecaseUser(server.config, server.tokenMaker, userRepo)
 	// router.Use(authMiddleware(server.tokenMaker))
-
-	// authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
-	// authRoutes.POST("/accounts", server.createAccount)
-
+	users_v1.NewUserRoutes(groupRouter, userCase)
 	server.router = router
 }

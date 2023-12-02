@@ -22,7 +22,7 @@ func (us *usecaseuser) Register(data model_user.User) (model_user.UserRegisterRe
 	if err != nil {
 		return model_user.UserRegisterResponse{}, err
 	}
-	refreshToken, payloadRefresh, err := us.tokenMaker.CreateToken(user.ID, us.config.AccessTokenDuration, true)
+	refreshToken, payloadRefresh, err := us.tokenMaker.CreateToken(user.ID, us.config.RefreshTokenDuration, true)
 	if err != nil {
 		return model_user.UserRegisterResponse{}, err
 	}
@@ -39,7 +39,6 @@ func (us *usecaseuser) Register(data model_user.User) (model_user.UserRegisterRe
 	// go func() {
 
 	// }()
-
 	resp := model_user.UserRegisterResponse{
 		AccessToken:      access,
 		RefreshToken:     refreshToken,
