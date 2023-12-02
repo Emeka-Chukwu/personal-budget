@@ -31,3 +31,21 @@ func GetBody[T any](c *gin.Context) T {
 	}
 	return payload
 }
+
+func GetUrlParams[T any](c *gin.Context) T {
+	var payload T
+	err := c.ShouldBindUri(&payload)
+	if err != nil {
+		return payload
+	}
+	return payload
+}
+
+func GetUrlQueryParams[T any](c *gin.Context) T {
+	var payload T
+	err := c.ShouldBindQuery(&payload)
+	if err != nil {
+		return payload
+	}
+	return payload
+}

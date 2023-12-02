@@ -21,6 +21,8 @@ type Config struct {
 	EmailSenderName      string        `mapstructure:"EMAIL_SENDER_NAME"`
 	EmailSenderAddress   string        `mapstructure:"EMAIL_SENDER_ADDRESS"`
 	EmailSenderPassword  string        `mapstructure:"EMAIL_SENDER_PASSWORD"`
+	PAYSTACK_KEY         string        `mapstructure:"sk_test_0ac55e6a046da4a777a58c05e94cc273245f98d0"`
+	PaystackBaseURL      string        `mapstructure:"PAYSTACK_BASE_URL"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

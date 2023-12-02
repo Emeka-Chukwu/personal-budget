@@ -9,7 +9,7 @@ import (
 
 type AccountRepository interface {
 	Create(model model_account.Account) (*model_account.Account, error)
-	Update(model model_account.Account) (*model_account.Account, error)
+	Update(model model_account.Account, id uuid.UUID) (*model_account.Account, error)
 	Delete(userId uuid.UUID) error
 	List(userId uuid.UUID) ([]model_account.Account, error)
 	Get(userId uuid.UUID) (*model_account.Account, error)
