@@ -12,5 +12,5 @@ func NewUserRoutes(router *gin.RouterGroup, usecase usecase_user.UsecaseUser) {
 	userHandler := NewUserHandler(usecase)
 	route := router.Group("/auths")
 	route.POST("/register", middleware.ValidatorMiddleware[model_user.User], userHandler.RegisterUser)
-	route.POST("/login", userHandler.LoginUser)
+	route.POST("/login", middleware.ValidatorMiddleware[model_user.UserLogin], userHandler.LoginUser)
 }

@@ -24,5 +24,5 @@ type UserAuthentication interface {
 
 	Register(data model_user.User) (model_user.UserResponse, error)
 	Update(id uuid.UUID, data model_user.User) (model_user.UserResponse, error)
-	GetUserByIDOrEmail(id any, key string) (model_user.UserResponse, error)
+	GetUserByIDOrEmail(id any) (model_user.UserResponse, error)
 }

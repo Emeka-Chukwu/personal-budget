@@ -7,12 +7,12 @@ import (
 )
 
 // GetUserByIDOrEmail implements UserAuthentication.
-func (auth *authentication) GetUserByIDOrEmail(value any, key string) (model_user.UserResponse, error) {
+func (auth *authentication) GetUserByIDOrEmail(value any) (model_user.UserResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), util.DbTimeout)
 	defer cancel()
-	stmt := `select id, first_name, last_name, email, phone, bvn, profile_url, created_at, updated_at from users where $1=$2`
+	stmt := `select id, first_name, last_name, email, phone, bvn, profile_url, created_at, updated_at, password, is_verified, is_suspended from users where email=$1`
 	var user model_user.UserResponse
-	err := auth.DB.QueryRowContext(ctx, stmt, key, value).
+	err := auth.DB.QueryRowContext(ctx, stmt, value).
 		Scan(
 			&user.ID,
 			&user.FirstName,
@@ -23,6 +23,9 @@ func (auth *authentication) GetUserByIDOrEmail(value any, key string) (model_use
 			&user.ProfileUrl,
 			&user.CreatedAt,
 			&user.UpdatedAt,
+			&user.Password,
+			&user.IsVerified,
+			&user.IsSuspended,
 		)
 	return user, err
 }

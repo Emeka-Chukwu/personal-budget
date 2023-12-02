@@ -20,13 +20,15 @@ type User struct {
 
 type UserResponse struct {
 	shared.Model
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
-	Email      string `json:"email"`
-	Phone      string `json:"phone"`
-	Bvn        string `json:"bvn"`
-	ProfileUrl string `json:"profile_url"`
-	IsVerified bool   `json:"is_verified"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+	Bvn         string `json:"bvn"`
+	ProfileUrl  string `json:"profile_url"`
+	IsVerified  bool   `json:"is_verified"`
+	IsSuspended bool   `json:"is_suspended"`
+	Password    string `json:"password"`
 }
 
 type UserRegisterResponse struct {

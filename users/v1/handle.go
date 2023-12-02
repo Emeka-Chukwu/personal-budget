@@ -20,8 +20,14 @@ type userhandler struct {
 }
 
 // LoginUser implements UserHandler.
-func (*userhandler) LoginUser(ctx *gin.Context) {
-	panic("unimplemented")
+func (handler *userhandler) LoginUser(ctx *gin.Context) {
+	req := util.GetBody[model_user.UserLogin](ctx)
+	resp, err := handler.usecase.Login(req)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusInternalServerError, gin.H{"data": resp})
 }
 
 // RegisterUser implements UserHandler.
@@ -37,6 +43,7 @@ func (handler *userhandler) RegisterUser(ctx *gin.Context) {
 			}
 		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
 	}
 	ctx.JSON(http.StatusInternalServerError, gin.H{"data": resp})
 }
