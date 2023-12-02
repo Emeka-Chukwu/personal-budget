@@ -21,8 +21,8 @@ type UserAuthentication interface {
 	// faceboolSignIn(data any)
 	// appleSignIn(data any)
 	// twoFactorAuth(data any)
-
+	GetUserById(id uuid.UUID) (model_user.UserResponse, error)
 	Register(data model_user.User) (model_user.UserResponse, error)
 	Update(id uuid.UUID, data model_user.User) (model_user.UserResponse, error)
-	GetUserByIDOrEmail(id any) (model_user.UserResponse, error)
+	GetUserByEmail(email string) (model_user.UserResponse, error)
 }

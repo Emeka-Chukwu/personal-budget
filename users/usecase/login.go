@@ -16,7 +16,7 @@ var (
 // Login implements UsecaseUser.
 func (us *usecaseuser) Login(data model_user.UserLogin) (model_user.UserRegisterResponse, error) {
 
-	user, err := us.repo.GetUserByIDOrEmail(data.Email)
+	user, err := us.repo.GetUserByEmail(data.Email)
 	if err != nil {
 		return model_user.UserRegisterResponse{}, ErrInvalidEmailOrPassword
 	}
