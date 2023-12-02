@@ -8,6 +8,7 @@ import (
 	"personal-budget/util"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -25,10 +26,12 @@ type accounthandler struct {
 
 // CreateAccount implements AccountHandler.
 func (handler *accounthandler) CreateAccount(ctx *gin.Context) {
+	payload := constant_account.GetAuthsPayload(ctx)
 	req := util.GetBody[model_account.Account](ctx)
+	req.UserId = payload.UserId
 	resp, err := handler.usecase.Create(req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusCreated, gin.H{"data": resp})
@@ -37,7 +40,8 @@ func (handler *accounthandler) CreateAccount(ctx *gin.Context) {
 // Delete implements AccountHandler.
 func (handler *accounthandler) Delete(ctx *gin.Context) {
 	req := util.GetUrlParams[model_account.AccountParam](ctx)
-	err := handler.usecase.Delete(req.ID)
+	id, _ := uuid.Parse(req.ID)
+	err := handler.usecase.Delete(id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
@@ -73,9 +77,10 @@ func (handler *accounthandler) List(ctx *gin.Context) {
 func (handler *accounthandler) Update(ctx *gin.Context) {
 	body := util.GetBody[model_account.Account](ctx)
 	req := util.GetUrlParams[model_account.AccountParam](ctx)
-	resp, err := handler.usecase.Update(body, req.ID)
+	id, err := uuid.Parse(req.ID)
+	resp, err := handler.usecase.Update(body, id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"data": resp})

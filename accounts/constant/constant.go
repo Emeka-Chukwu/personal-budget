@@ -10,7 +10,7 @@ var (
 	authorizationPayloadKey = "authorization_payload"
 )
 
-func GetAuthsPayload(ctx *gin.Context) token.Payload {
+func GetAuthsPayload(ctx *gin.Context) *token.Payload {
 	pay, _ := ctx.Get(authorizationPayloadKey)
-	return pay.(token.Payload)
+	return pay.(*token.Payload)
 }

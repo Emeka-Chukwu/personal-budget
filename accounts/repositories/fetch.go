@@ -10,18 +10,6 @@ import (
 
 // Get implements AccountRepository.
 func (repo *accountRepository) Get(id uuid.UUID) (*model_account.Account, error) {
-	// ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	// defer cancel()
-	// stmp := `select id, name,  created_at, updated_at from labels where id=$1`
-	// var label resp.LabelResponse
-	// err := lab.DB.QueryRowContext(ctx, stmp, id).
-	// 	Scan(
-	// 		&label.ID,
-	// 		&label.Name,
-	// 		&label.CreatedAt,
-	// 		&label.UpdatedAt,
-	// 	)
-	// return label, err
 	ctx, cancel := context.WithTimeout(context.Background(), util.DbTimeout)
 	defer cancel()
 	stmt := `select id, name, number, user_id, created_at, updated_at from accounts where user_id=$1 limit 1`
@@ -45,4 +33,16 @@ func (repo *accountRepository) List(id uuid.UUID) ([]model_account.Account, erro
 		resp = append(resp, model)
 	}
 	return resp, err
+}
+
+// GetByID implements AccountRepository.
+func (repo *accountRepository) GetByID(id uuid.UUID) (*model_account.Account, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), util.DbTimeout)
+	defer cancel()
+	stmt := `select id, name, number, user_id, created_at, updated_at from accounts where id=$1`
+	var model model_account.Account
+	err := repo.DB.QueryRowContext(ctx, stmt, id).
+		Scan(&model.ID, &model.Name, &model.Number, &model.UserId, &model.CreatedAt, &model.UpdatedAt)
+
+	return &model, err
 }

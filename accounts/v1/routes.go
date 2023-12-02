@@ -12,8 +12,8 @@ func NewAccountsRoutes(router *gin.RouterGroup, usecase usecase_account.AccountU
 	acctHandler := NewAccountHandler(usecase)
 	route := router.Group("/accounts")
 	route.POST("/create", middleware.ValidatorMiddleware[model_account.Account], acctHandler.CreateAccount)
-	route.PUT("/update", middleware.ValidatorMiddleware[model_account.Account], acctHandler.Update)
-	route.GET("/:id/fetch", acctHandler.FetchAccount)
+	route.PUT("/:id/update", middleware.ValidatorMiddleware[model_account.Account], acctHandler.Update)
+	route.GET("/fetch", acctHandler.FetchAccount)
 	route.GET("/list", acctHandler.List)
 	route.DELETE("/:id/delete", acctHandler.Delete)
 }

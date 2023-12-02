@@ -15,6 +15,7 @@ type AccountUsecase interface {
 	Delete(id uuid.UUID) error
 	List(id uuid.UUID) ([]model_account.Account, error)
 	Get(id uuid.UUID) (*model_account.Account, error)
+	GetByID(id uuid.UUID) (*model_account.Account, error)
 }
 
 type accountUsecase struct {

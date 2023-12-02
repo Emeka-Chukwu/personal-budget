@@ -11,7 +11,7 @@ import (
 func (api apiCallInterface) PaystackApiCall(bankntAccount, bankCode string) error {
 	client := resty.New()
 	resp, err := client.R().SetHeader("Content-Type", "application/json").
-		SetHeader("Authorization", api.config.PAYSTACK_KEY).
+		SetHeader("Authorization", "Bearer "+api.config.PaystackKey).
 		Get(api.config.PaystackBaseURL + fmt.Sprintf("/bank/resolve?account_number=%s&bank_code=%s", bankntAccount, bankCode))
 	if err != nil {
 		return err
@@ -21,7 +21,8 @@ func (api apiCallInterface) PaystackApiCall(bankntAccount, bankCode string) erro
 		return err
 	}
 	if !res["status"].(bool) {
-		return errors.New("error")
+		// message := res["message"]
+		return errors.New(fmt.Sprint("error: %v", "not valid date"))
 	}
 	return nil
 }

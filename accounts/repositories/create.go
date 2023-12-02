@@ -22,6 +22,8 @@ func (repo *accountRepository) Create(model model_account.Account) (*model_accou
 		&resp.Name,
 		&resp.Number,
 		&resp.UserId,
+		&resp.CreatedAt,
+		&resp.UpdatedAt,
 	)
 	return &resp, err
 }

@@ -64,8 +64,8 @@ func (server *Server) setupRouter() {
 	userCase := usecase_user.NewUsecaseUser(server.config, server.tokenMaker, userRepo)
 	users_v1.NewUserRoutes(groupRouter, userCase)
 
-	/////
-	router.Use(middleware.AuthMiddleware(server.tokenMaker))
+	///// accounts
+	groupRouter.Use(middleware.AuthMiddleware(server.tokenMaker))
 	acctRepo := repositories_account.NewAccountRepository(server.conn)
 	acctCase := usecase_account.NewAccountUsecase(server.tokenMaker, acctRepo, server.config)
 	account_v1.NewAccountsRoutes(groupRouter, acctCase)

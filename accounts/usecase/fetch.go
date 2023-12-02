@@ -15,3 +15,8 @@ func (us *accountUsecase) Get(id uuid.UUID) (*model_account.Account, error) {
 func (us *accountUsecase) List(id uuid.UUID) ([]model_account.Account, error) {
 	return us.repo.List(id)
 }
+
+// GetByID implements AccountUsecase.
+func (us *accountUsecase) GetByID(id uuid.UUID) (*model_account.Account, error) {
+	return us.repo.GetByID(id)
+}

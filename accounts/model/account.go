@@ -10,10 +10,10 @@ type Account struct {
 	shared.Model
 	Name     string    `json:"name" validate:"required"`
 	BankCode string    `json:"bank_code" validate:"required"`
-	Number   string    `json:"number" validate:"required,eq=10"`
+	Number   string    `json:"number" validate:"required"`
 	UserId   uuid.UUID `json:"user_id"`
 }
 
 type AccountParam struct {
-	ID uuid.UUID `uri:"id" binding:"required"`
+	ID string `uri:"id" binding:"required"`
 }

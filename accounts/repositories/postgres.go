@@ -13,6 +13,7 @@ type AccountRepository interface {
 	Delete(userId uuid.UUID) error
 	List(userId uuid.UUID) ([]model_account.Account, error)
 	Get(userId uuid.UUID) (*model_account.Account, error)
+	GetByID(id uuid.UUID) (*model_account.Account, error)
 }
 
 type accountRepository struct {
