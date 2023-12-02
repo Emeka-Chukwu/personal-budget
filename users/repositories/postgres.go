@@ -26,4 +26,5 @@ type UserAuthentication interface {
 	CreateSession(data model_user.Session) (model_user.Session, error)
 	Update(id uuid.UUID, data model_user.User) (model_user.UserResponse, error)
 	GetUserByEmail(email string) (model_user.UserResponse, error)
+	CreateWallet(userId uuid.UUID) error
 }

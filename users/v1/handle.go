@@ -29,7 +29,7 @@ func (handler *userhandler) LoginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusInternalServerError, gin.H{"data": resp})
+	ctx.JSON(http.StatusOK, gin.H{"data": resp})
 }
 
 // RegisterUser implements UserHandler.
@@ -49,7 +49,7 @@ func (handler *userhandler) RegisterUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
-	ctx.JSON(http.StatusInternalServerError, gin.H{"data": resp})
+	ctx.JSON(http.StatusCreated, gin.H{"data": resp})
 }
 
 func NewUserHandler(usecase usecase_user.UsecaseUser) UserHandler {

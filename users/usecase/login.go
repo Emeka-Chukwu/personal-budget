@@ -4,6 +4,8 @@ import (
 	"errors"
 	model_user "personal-budget/users/models"
 	"personal-budget/util"
+
+	"github.com/google/uuid"
 )
 
 var (
@@ -44,11 +46,11 @@ func (us *usecaseuser) Login(data model_user.UserLogin) (model_user.UserRegister
 		UserAgent: data.UserAgent,
 		ClientIP:  data.ClientIP,
 	}
-	us.repo.CreateSession(sess)
-	// create your wallet here
-	// go func() {
 
-	// }()
+	var sessID uuid.UUID
+	if sessRep, err := us.repo.CreateSession(sess); err == nil {
+		sessID = sessRep.ID
+	}
 	resp := model_user.UserRegisterResponse{
 		AccessToken:      access,
 		RefreshToken:     refreshToken,
@@ -57,6 +59,7 @@ func (us *usecaseuser) Login(data model_user.UserLogin) (model_user.UserRegister
 		RefreshExpiredAt: payloadRefresh.ExpiredAt,
 		RefreshIssuedAt:  payloadRefresh.IssuedAt,
 		UserResponse:     user,
+		SessionId:        sessID,
 	}
 	return resp, nil
 }

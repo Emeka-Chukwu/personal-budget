@@ -3,11 +3,12 @@ package usecase_user
 import (
 	model_user "personal-budget/users/models"
 	"personal-budget/util"
+
+	"github.com/google/uuid"
 )
 
 // Register implements UsecaseUser.
 func (us *usecaseuser) Register(data model_user.User) (model_user.UserRegisterResponse, error) {
-
 	password, err := util.HashPassword(data.Password)
 	if err != nil {
 		return model_user.UserRegisterResponse{}, err
@@ -25,8 +26,6 @@ func (us *usecaseuser) Register(data model_user.User) (model_user.UserRegisterRe
 	if err != nil {
 		return model_user.UserRegisterResponse{}, err
 	}
-	//// set the values of session
-	// Retrieve User-Agent from request headers
 
 	sess := model_user.Session{
 		UserID:    user.ID,
@@ -35,11 +34,14 @@ func (us *usecaseuser) Register(data model_user.User) (model_user.UserRegisterRe
 		UserAgent: data.UserAgent,
 		ClientIP:  data.ClientIP,
 	}
-	us.repo.CreateSession(sess)
-	// create your wallet here
-	// go func() {
+	var sessID uuid.UUID
+	if sessRep, err := us.repo.CreateSession(sess); err == nil {
+		sessID = sessRep.ID
+	}
 
-	// }()
+	go func() {
+		us.repo.CreateWallet(user.ID)
+	}()
 	resp := model_user.UserRegisterResponse{
 		AccessToken:      access,
 		RefreshToken:     refreshToken,
@@ -48,6 +50,7 @@ func (us *usecaseuser) Register(data model_user.User) (model_user.UserRegisterRe
 		RefreshExpiredAt: payloadRefresh.ExpiredAt,
 		RefreshIssuedAt:  payloadRefresh.IssuedAt,
 		UserResponse:     user,
+		SessionId:        sessID,
 	}
 	return resp, nil
 }
