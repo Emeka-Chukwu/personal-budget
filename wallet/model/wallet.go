@@ -9,5 +9,5 @@ import (
 type Wallet struct {
 	shared.Model
 	UserID  uuid.UUID `json:"user_id"`
-	Balance int       `json:"balance"`
+	Balance int       `json:"balance" validate:"required"`
 }
