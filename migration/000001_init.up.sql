@@ -54,6 +54,7 @@ CREATE TABLE "transactions" (
   "type" varchar,
   "status" varchar,
   "user_id" uuid,
+  "reference" varchar,
   "amount" int,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz NOT NULL DEFAULT now(),
