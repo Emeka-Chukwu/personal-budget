@@ -8,6 +8,7 @@ import (
 	usecase_account "personal-budget/accounts/usecase"
 	account_v1 "personal-budget/accounts/v1"
 	"personal-budget/middleware"
+	"personal-budget/payment"
 	"personal-budget/token"
 	repositories_users "personal-budget/users/repositories"
 	usecase_user "personal-budget/users/usecase"
@@ -59,6 +60,9 @@ func (server *Server) setupRouter() {
 		})
 	})
 	groupRouter := router.Group("/api/v1")
+
+	////payment
+	payInterface := payment.NewPastackPayment(server.config)
 	//////user
 	userRepo := repositories_users.NewUserAuths(server.conn)
 	userCase := usecase_user.NewUsecaseUser(server.config, server.tokenMaker, userRepo)
@@ -67,7 +71,7 @@ func (server *Server) setupRouter() {
 	///// accounts
 	groupRouter.Use(middleware.AuthMiddleware(server.tokenMaker))
 	acctRepo := repositories_account.NewAccountRepository(server.conn)
-	acctCase := usecase_account.NewAccountUsecase(server.tokenMaker, acctRepo, server.config)
+	acctCase := usecase_account.NewAccountUsecase(server.tokenMaker, acctRepo, server.config, payInterface)
 	account_v1.NewAccountsRoutes(groupRouter, acctCase)
 
 	server.router = router

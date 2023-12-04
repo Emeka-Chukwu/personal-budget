@@ -8,10 +8,11 @@ import (
 
 type Account struct {
 	shared.Model
-	Name     string    `json:"name" validate:"required"`
-	BankCode string    `json:"bank_code" validate:"required"`
-	Number   string    `json:"number" validate:"required"`
-	UserId   uuid.UUID `json:"user_id"`
+	Name          string    `json:"name" validate:"required"`
+	BankCode      string    `json:"bank_code" validate:"required"`
+	Number        string    `json:"number" validate:"required"`
+	RecipientCode string    `json:"recipient_code"`
+	UserId        uuid.UUID `json:"user_id"`
 }
 
 type AccountParam struct {

@@ -3,6 +3,7 @@ package usecase_account
 import (
 	model_account "personal-budget/accounts/model"
 	repositories_account "personal-budget/accounts/repositories"
+	"personal-budget/payment"
 	"personal-budget/token"
 	"personal-budget/util"
 
@@ -21,9 +22,11 @@ type AccountUsecase interface {
 type accountUsecase struct {
 	token  token.Maker
 	repo   repositories_account.AccountRepository
+	pay    payment.PaymentInterface
 	config util.Config
 }
 
-func NewAccountUsecase(token token.Maker, repo repositories_account.AccountRepository, config util.Config) AccountUsecase {
-	return &accountUsecase{repo: repo, token: token, config: config}
+func NewAccountUsecase(token token.Maker, repo repositories_account.AccountRepository, config util.Config,
+	pay payment.PaymentInterface) AccountUsecase {
+	return &accountUsecase{repo: repo, token: token, config: config, pay: pay}
 }

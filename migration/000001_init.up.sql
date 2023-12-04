@@ -22,7 +22,7 @@ CREATE TABLE "accounts" (
   "name" varchar,
   "number" varchar,
   "user_id" uuid,
-  "balance" int,
+  "recipient_code" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")

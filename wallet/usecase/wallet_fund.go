@@ -9,6 +9,6 @@ import (
 // FundWallet implements WalletUsecase.
 // / for payment web hook
 func (repo *walletUsecase) InitiateFundWallet(payload payment.PayloadInit, userId uuid.UUID) (payment.Payload, error) {
-	return payment.InitializePayment(repo.config, payload)
+	return repo.pay.InitializePayment(payload)
 
 }

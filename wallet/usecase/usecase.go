@@ -23,6 +23,7 @@ type walletUsecase struct {
 	token      token.Maker
 	walletRepo repositories_wallet.WalletRepo
 	userRepo   repositories_users.UserAuthentication
+	pay        payment.PaymentInterface
 	config     util.Config
 }
 

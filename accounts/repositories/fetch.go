@@ -12,10 +12,10 @@ import (
 func (repo *accountRepository) Get(id uuid.UUID) (*model_account.Account, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), util.DbTimeout)
 	defer cancel()
-	stmt := `select id, name, number, user_id, created_at, updated_at from accounts where user_id=$1 limit 1`
+	stmt := `select id, name, number, user_id, recipient_code, created_at, updated_at from accounts where user_id=$1 limit 1`
 	var model model_account.Account
 	err := repo.DB.QueryRowContext(ctx, stmt, id).
-		Scan(&model.ID, &model.Name, &model.Number, &model.UserId, &model.CreatedAt, &model.UpdatedAt)
+		Scan(&model.ID, &model.Name, &model.Number, &model.UserId, &model.RecipientCode, &model.CreatedAt, &model.UpdatedAt)
 
 	return &model, err
 }
