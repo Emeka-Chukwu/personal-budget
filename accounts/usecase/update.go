@@ -27,9 +27,7 @@ func (us *accountUsecase) Update(model model_account.Account, id uuid.UUID) (*mo
 		}
 		account.RecipientCode = data.Data.RecipientCode
 	}
-
 	account.Name = model.Name
 	account.Number = model.Number
-
 	return us.repo.Update(*account, account.ID)
 }
