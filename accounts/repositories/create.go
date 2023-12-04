@@ -10,14 +10,15 @@ import (
 func (repo *accountRepository) Create(model model_account.Account) (*model_account.Account, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), util.DbTimeout)
 	defer cancel()
-	stmt := `insert into accounts (name, number, user_id, recipient_code)
-		values ($1, $2, $3, $4) returning id, name, number, user_id, created_at, updated_at`
+	stmt := `insert into accounts (name, number, user_id, recipient_code, bank_code)
+		values ($1, $2, $3, $4, $5) returning id, name, number, user_id, created_at, updated_at`
 	var resp model_account.Account
 	err := repo.DB.QueryRowContext(ctx, stmt,
 		model.Name,
 		model.Number,
 		model.UserId,
 		model.RecipientCode,
+		model.BankCode,
 	).Scan(
 		&resp.ID,
 		&resp.Name,

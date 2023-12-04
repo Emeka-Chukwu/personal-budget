@@ -23,6 +23,7 @@ CREATE TABLE "accounts" (
   "number" varchar,
   "user_id" uuid,
   "recipient_code" varchar NOT NULL,
+  "bank_code" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")
