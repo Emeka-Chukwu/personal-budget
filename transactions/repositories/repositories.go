@@ -35,6 +35,7 @@ type TransactionRepo interface {
 	CreateUserTransaction(model model_transaction.Transaction) (model_transaction.Transaction, error)
 	UpdateUserTransaction(reference, status string) (model_transaction.Transaction, error)
 	GetUserTransactionByReference(reference string) (model_transaction.Transaction, error)
+	UpdateUserTransactionType(reference string, typeD string) (model_transaction.Transaction, error)
 }
 
 type transactionRepo struct {
