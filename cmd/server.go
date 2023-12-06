@@ -17,6 +17,9 @@ import (
 	usecase_user "personal-budget/users/usecase"
 	users_v1 "personal-budget/users/v1"
 	"personal-budget/util"
+	repositories_wallet "personal-budget/wallet/repositories"
+	webhook_usecase "personal-budget/webhook/usecase"
+	webhook_v1 "personal-budget/webhook/v1"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -71,6 +74,14 @@ func (server *Server) setupRouter() {
 	userCase := usecase_user.NewUsecaseUser(server.config, server.tokenMaker, userRepo)
 	users_v1.NewUserRoutes(groupRouter, userCase)
 
+	//////////////
+	transRepo := repositories_transaction.NewTransactionRepo(server.conn)
+	walletRepo := repositories_wallet.NewWalletRepo(server.conn)
+
+	//////// webhook
+	webhookusecase := webhook_usecase.NewWebhookusecase(walletRepo, transRepo, server.config)
+	webhook_v1.NewWebhooksRoutes(groupRouter, webhookusecase)
+
 	//////middleware
 	groupRouter.Use(middleware.AuthMiddleware(server.tokenMaker))
 
@@ -80,7 +91,7 @@ func (server *Server) setupRouter() {
 	account_v1.NewAccountsRoutes(groupRouter, acctCase)
 
 	//////// transactions
-	transRepo := repositories_transaction.NewTransactionRepo(server.conn)
+
 	transUsecase := usecases_transaction.NewTransactionUsecase(transRepo)
 	transaction_v1.NewTransactionRoutes(groupRouter, transUsecase)
 
