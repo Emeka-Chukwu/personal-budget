@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewWebhooksRoutes(router *gin.RouterGroup,
+func NewWalletRoutes(router *gin.RouterGroup,
 	transusecase usecases_transaction.TransactionUsecase,
 	walletusecase usecase_wallet.WalletUsecase,
 	payService payment.PaymentInterface,

@@ -18,6 +18,8 @@ import (
 	users_v1 "personal-budget/users/v1"
 	"personal-budget/util"
 	repositories_wallet "personal-budget/wallet/repositories"
+	usecase_wallet "personal-budget/wallet/usecase"
+	wallet_v1 "personal-budget/wallet/v1"
 	webhook_usecase "personal-budget/webhook/usecase"
 	webhook_v1 "personal-budget/webhook/v1"
 
@@ -77,6 +79,7 @@ func (server *Server) setupRouter() {
 	//////////////
 	transRepo := repositories_transaction.NewTransactionRepo(server.conn)
 	walletRepo := repositories_wallet.NewWalletRepo(server.conn)
+	// walletUse := usecase_wallet.NewAccountUsecase()
 
 	//////// webhook
 	webhookusecase := webhook_usecase.NewWebhookusecase(walletRepo, transRepo, server.config)
@@ -94,6 +97,10 @@ func (server *Server) setupRouter() {
 
 	transUsecase := usecases_transaction.NewTransactionUsecase(transRepo)
 	transaction_v1.NewTransactionRoutes(groupRouter, transUsecase)
+
+	//////// wallets
+	walletUse := usecase_wallet.NewWalletUsecase(walletRepo, userRepo, server.config)
+	wallet_v1.NewWalletRoutes(groupRouter, transUsecase, walletUse, payInterface, acctCase, userCase)
 
 	server.router = router
 }

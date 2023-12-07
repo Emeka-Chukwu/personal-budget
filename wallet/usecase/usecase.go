@@ -2,7 +2,6 @@ package usecase_wallet
 
 import (
 	"personal-budget/payment"
-	"personal-budget/token"
 	repositories_users "personal-budget/users/repositories"
 	"personal-budget/util"
 	wallet_model "personal-budget/wallet/model"
@@ -20,7 +19,6 @@ type WalletUsecase interface {
 }
 
 type walletUsecase struct {
-	token      token.Maker
 	walletRepo repositories_wallet.WalletRepo
 	userRepo   repositories_users.UserAuthentication
 	pay        payment.PaymentInterface
@@ -32,7 +30,7 @@ func (*walletUsecase) WithdrawalExample(userId uuid.UUID, amount int, callback f
 	panic("unimplemented")
 }
 
-func NewAccountUsecase(token token.Maker, repo repositories_wallet.WalletRepo,
+func NewWalletUsecase(repo repositories_wallet.WalletRepo,
 	userRepo repositories_users.UserAuthentication, config util.Config) WalletUsecase {
-	return &walletUsecase{walletRepo: repo, token: token, userRepo: userRepo, config: config}
+	return &walletUsecase{walletRepo: repo, userRepo: userRepo, config: config}
 }
