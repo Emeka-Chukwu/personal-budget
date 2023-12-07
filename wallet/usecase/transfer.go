@@ -8,7 +8,6 @@ import (
 
 // Transfer implements WalletUsecase.
 func (repo *walletUsecase) Transfer(fromUserId uuid.UUID, receiverEmail string, amount int) error {
-	// panic("unimplemented")
 	fromWallet, err := repo.walletRepo.Fetch(fromUserId)
 	if err != nil {
 		return err

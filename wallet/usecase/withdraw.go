@@ -1,16 +1,15 @@
 package usecase_wallet
 
-import "github.com/google/uuid"
+import (
+	"personal-budget/payment"
+
+	"github.com/google/uuid"
+)
 
 // Withdrawal implements WalletUsecase.
-func (repo *walletUsecase) Withdrawal(userId uuid.UUID, amount int, callback func() error) error {
-	panic("unimplemented")
-}
-
-// WithdrawalExample implements WalletUsecase.
-func (repo *walletUsecase) WithdrawalExample(userId uuid.UUID, amount int, callback func(userId uuid.UUID, amount int) error) error {
-	return repo.walletRepo.WithdrawalExample(userId, amount, func(userId uuid.UUID, amount int) error {
-		/// write o your paystack api call here
-		return nil
+func (repo *walletUsecase) Withdrawal(userId uuid.UUID, amount int, request payment.InitiateTransfer, callback func(transferRequst payment.InitiateTransfer) (payment.TransferResponse, error)) (payment.TransferResponse, error) {
+	data, err := repo.walletRepo.Withdrawal(userId, amount, request, func(transferRequst payment.InitiateTransfer) (payment.TransferResponse, error) {
+		return repo.pay.Create(request)
 	})
+	return data, err
 }

@@ -66,6 +66,7 @@ type DetailsTransfer struct {
 }
 
 // ///initiatePayment Response
+
 type TransferResponse struct {
 	Status  bool         `json:"status"`
 	Message string       `json:"message"`
@@ -73,16 +74,21 @@ type TransferResponse struct {
 }
 
 type DataTransfer struct {
-	Integration  int64  `json:"integration"`
-	Domain       string `json:"domain"`
-	Amount       int64  `json:"amount"`
-	Currency     string `json:"currency"`
-	Source       string `json:"source"`
-	Reason       string `json:"reason"`
-	Recipient    int64  `json:"recipient"`
-	Status       string `json:"status"`
-	TransferCode string `json:"transfer_code"`
-	ID           int64  `json:"id"`
-	CreatedAt    string `json:"createdAt"`
-	UpdatedAt    string `json:"updatedAt"`
+	Domain        string      `json:"domain"`
+	Amount        int64       `json:"amount"`
+	Currency      string      `json:"currency"`
+	Reference     string      `json:"reference"`
+	Source        string      `json:"source"`
+	SourceDetails interface{} `json:"source_details"`
+	Reason        string      `json:"reason"`
+	Status        string      `json:"status"`
+	Failures      interface{} `json:"failures"`
+	TransferCode  string      `json:"transfer_code"`
+	TitanCode     interface{} `json:"titan_code"`
+	TransferredAt interface{} `json:"transferred_at"`
+	ID            int64       `json:"id"`
+	Integration   int64       `json:"integration"`
+	Recipient     int64       `json:"recipient"`
+	CreatedAt     string      `json:"createdAt"`
+	UpdatedAt     string      `json:"updatedAt"`
 }

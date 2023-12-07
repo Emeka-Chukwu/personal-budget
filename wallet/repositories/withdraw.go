@@ -1,56 +1,33 @@
 package repositories_wallet
 
 import (
+	"personal-budget/payment"
+
 	"github.com/google/uuid"
 )
 
 // Withdrawal implements WalletRepo.
-func (repo *walletRepo) Withdrawal(userId uuid.UUID, amount int, callback func() error) error {
+func (repo *walletRepo) Withdrawal(userId uuid.UUID, amount int, request payment.InitiateTransfer, callback func(transferRequst payment.InitiateTransfer) (payment.TransferResponse, error)) (payment.TransferResponse, error) {
 	tx, err := repo.DB.Begin()
 	if err != nil {
-		return err
+		return payment.TransferResponse{}, err
 	}
 	stmt := `update wallets set balance = balance - $1 where user_id=$2`
 	_, err = tx.Exec(stmt, amount, userId)
 	if err != nil {
 		tx.Rollback()
-		return err
+		return payment.TransferResponse{}, err
 	}
-	err = callback()
+	resp, err := callback(request)
 	if err != nil {
 		tx.Rollback()
-		return err
+		return payment.TransferResponse{}, err
 	}
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return err
+		return payment.TransferResponse{}, err
 	}
-	return nil
+	return resp, nil
 
-}
-
-// WithdrawalExampl implements WalletRepo.
-func (repo *walletRepo) WithdrawalExample(userId uuid.UUID, amount int, callback func(userId uuid.UUID, amount int) error) error {
-	tx, err := repo.DB.Begin()
-	if err != nil {
-		return err
-	}
-	stmt := `update wallets set balance = balance - $1 where user_id=$2`
-	_, err = tx.Exec(stmt, amount, userId)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = callback(userId, amount)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	return nil
 }

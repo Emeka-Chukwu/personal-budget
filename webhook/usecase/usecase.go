@@ -151,14 +151,6 @@ func (hook *webhookusecase) WithdrawalWebhook(req payment.TransferWebHook) (any,
 	if err != nil {
 		return nil, err
 	}
-	if strings.EqualFold(req.Data.Status, string(PaymentSuccess)) {
-		err = hook.walletRepo.Withdrawal(transaction.UserID, int(req.Data.Amount), func() error {
-			return nil
-		})
-		if err != nil {
-			return nil, err
-		}
-	}
 	if strings.EqualFold(req.Data.Status, string(PaymentReversed)) {
 		_, err = hook.transactionRepo.UpdateUserTransactionType(req.Data.Reference, string(PaymentCredit))
 		if err != nil {

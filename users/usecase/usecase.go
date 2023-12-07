@@ -11,6 +11,7 @@ type UsecaseUser interface {
 	Login(model_user.UserLogin) (model_user.UserRegisterResponse, error)
 	Register(model_user.User) (model_user.UserRegisterResponse, error)
 	VerifyEmail(data model_user.VerifyEmail) (model_user.UserResponse, error)
+	GetUserByEmail(email string) (model_user.UserResponse, error)
 }
 
 type usecaseuser struct {
