@@ -108,6 +108,10 @@ type WalletHandler interface {
 	Transfer(ctx *gin.Context)
 }
 
-func NewWalletHandler(trans usecases_transaction.TransactionUsecase, walletusecase usecase_wallet.WalletUsecase) WalletHandler {
-	return &walletHandler{transusecase: trans, walletusecase: walletusecase}
+func NewWalletHandler(trans usecases_transaction.TransactionUsecase,
+	walletusecase usecase_wallet.WalletUsecase,
+	accountUsecase usecase_account.AccountUsecase,
+	payService payment.PaymentInterface,
+	userUsecase usecase_user.UsecaseUser) WalletHandler {
+	return &walletHandler{transusecase: trans, walletusecase: walletusecase, accountUsecae: accountUsecase, userUsecase: userUsecase}
 }
