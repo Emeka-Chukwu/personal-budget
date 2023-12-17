@@ -38,7 +38,10 @@ func (handler *walletHandler) Fetch(ctx *gin.Context) {
 // InitiateFundWallet implements WalletHandler.
 func (handler *walletHandler) InitiateFundWallet(ctx *gin.Context) {
 	request := util.GetBody[payment.PayloadInit](ctx)
+	payload := shared.GetAuthsPayload(ctx)
+	request.Metadata.UserID = payload.UserId.String()
 	resp, err := handler.payService.InitializePayment(request)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -113,5 +116,5 @@ func NewWalletHandler(trans usecases_transaction.TransactionUsecase,
 	accountUsecase usecase_account.AccountUsecase,
 	payService payment.PaymentInterface,
 	userUsecase usecase_user.UsecaseUser) WalletHandler {
-	return &walletHandler{transusecase: trans, walletusecase: walletusecase, accountUsecae: accountUsecase, userUsecase: userUsecase}
+	return &walletHandler{transusecase: trans, walletusecase: walletusecase, accountUsecae: accountUsecase, userUsecase: userUsecase, payService: payService}
 }

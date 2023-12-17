@@ -99,7 +99,7 @@ func (server *Server) setupRouter() {
 	transaction_v1.NewTransactionRoutes(groupRouter, transUsecase)
 
 	//////// wallets
-	walletUse := usecase_wallet.NewWalletUsecase(walletRepo, userRepo, server.config)
+	walletUse := usecase_wallet.NewWalletUsecase(walletRepo, userRepo, server.config, payInterface)
 	wallet_v1.NewWalletRoutes(groupRouter, transUsecase, walletUse, payInterface, acctCase, userCase)
 
 	server.router = router

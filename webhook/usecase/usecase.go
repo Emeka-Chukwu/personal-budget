@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // ////// Amounts are all in kobos
@@ -45,7 +46,7 @@ type Webhookusecase interface {
 	WithdrawalWebhook(payment.TransferWebHook) (any, error)
 	FundWebhook(payment.ChargeWebhookResponse) (any, error)
 	PayStackWebhook(ctx *gin.Context) (any, error)
-	IsFromPaystackSource(ctx *gin.Context) (bool, error)
+	IsFromPaystackSource(ctx *gin.Context) (bool, []byte, error)
 }
 type webhookusecase struct {
 	walletRepo      repositories_wallet.WalletRepo
@@ -63,16 +64,22 @@ func (hook *webhookusecase) FundWebhook(req payment.ChargeWebhookResponse) (any,
 		}
 		createTransaction = true
 	}
+	userId, err := uuid.Parse(req.Data.Metadata.UserID)
+	if err != nil {
+		return nil, err
+	}
+	amount := int(req.Data.Amount) / 100
 	if createTransaction {
+
 		transactionParams := model_transaction.Transaction{Type: string(PaymentCredit), Status: req.Data.Status,
-			Reference: req.Data.Reference, UserID: req.Data.Metadata.UserID, Amount: int(req.Data.Amount),
+			Reference: req.Data.Reference, UserID: userId, Amount: amount,
 		}
 		_, err = hook.transactionRepo.CreateUserTransaction(transactionParams)
 		if err != nil {
 			return nil, err
 		}
 		if strings.EqualFold(req.Data.Status, string(PaymentSuccess)) {
-			_, err = hook.walletRepo.FundAccount(int(req.Data.Amount), req.Data.Metadata.UserID)
+			_, err = hook.walletRepo.FundAccount(amount, userId)
 			if err != nil {
 				return nil, err
 			}
@@ -90,7 +97,7 @@ func (hook *webhookusecase) FundWebhook(req payment.ChargeWebhookResponse) (any,
 		return nil, err
 	}
 	if strings.EqualFold(req.Data.Status, string(PaymentSuccess)) {
-		_, err = hook.walletRepo.FundAccount(int(req.Data.Amount), req.Data.Metadata.UserID)
+		_, err = hook.walletRepo.FundAccount(int(amount), userId)
 		if err != nil {
 			return nil, err
 		}
@@ -99,37 +106,44 @@ func (hook *webhookusecase) FundWebhook(req payment.ChargeWebhookResponse) (any,
 }
 
 // IsFromPaystackSource implements Webhookusecase.
-func (hook *webhookusecase) IsFromPaystackSource(c *gin.Context) (bool, error) {
+func (hook *webhookusecase) IsFromPaystackSource(c *gin.Context) (bool, []byte, error) {
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		return false, err
+		return false, body, err
 	}
 	hash := hmac.New(sha512.New, []byte(hook.config.PaystackKey))
 	hash.Write(body)
 	calculatedHash := hex.EncodeToString(hash.Sum(nil))
-	return calculatedHash == c.GetHeader("x-paystack-signature"), nil
+	return calculatedHash == c.GetHeader("x-paystack-signature"), body, nil
 }
 
 // PayStackWebhook implements Webhookusecase.
 func (hook *webhookusecase) PayStackWebhook(ctx *gin.Context) (any, error) {
-	isFromValidSourced, err := hook.IsFromPaystackSource(ctx)
+	isFromValidSourced, body, err := hook.IsFromPaystackSource(ctx)
 	if err != nil || !isFromValidSourced {
 		return nil, err
 	}
 	var req Event
-	err = json.NewDecoder(ctx.Request.Body).Decode(&req)
+	if err := json.Unmarshal(body, &req); err != nil {
+		return false, err
+	}
 	if err != nil {
 		return nil, err
 	}
 	var result any
 	switch req.Event {
 	case string(ChargeSuccess):
-		payload := util.GetBody[payment.ChargeWebhookResponse](ctx)
+		var payload payment.ChargeWebhookResponse
+		if err := json.Unmarshal(body, &payload); err != nil {
+			return false, err
+		}
 		result, err = hook.FundWebhook(payload)
 	case string(TranferSuccess), string(TranferReversed), string(TranferFailed):
-		payload := util.GetBody[payment.TransferWebHook](ctx)
+		var payload payment.TransferWebHook
+		if err := json.Unmarshal(body, &payload); err != nil {
+			return false, err
+		}
 		result, err = hook.WithdrawalWebhook(payload)
-
 	}
 	return result, err
 }

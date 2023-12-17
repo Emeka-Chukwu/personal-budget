@@ -62,6 +62,19 @@ CREATE TABLE "transactions" (
   PRIMARY KEY ("id")
 );
 
+CREATE TABLE "schedule_transactions" (
+  "id" uuid DEFAULT uuid_generate_v4(),
+  "type" varchar,
+  "status" varchar,
+  "user_id" uuid,
+  "scheduled_payment_id" uuid,
+  "reference" varchar,
+  "amount" int,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY ("id")
+);
+
 CREATE TABLE "verifications" (
   "id" uuid DEFAULT uuid_generate_v4(),
   "secret_code" varchar,
@@ -85,7 +98,9 @@ CREATE TABLE "payment_pins" (
 CREATE TABLE "scheduled_payments" (
   "id" uuid DEFAULT uuid_generate_v4(),
   "user_id" uuid,
-  "amount" uuid,
+  "amount" int,
+  "periods" int,
+  "paid_period" int,
   "paydate" timestamptz,
   "is_completed" boolean DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT now(),
@@ -106,3 +121,4 @@ ALTER TABLE "payment_pins" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id")
 ALTER TABLE "scheduled_payments" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "wallets" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "schedule_transactions" ADD FOREIGN KEY ("scheduled_payment_id") REFERENCES "scheduled_payments" ("id");

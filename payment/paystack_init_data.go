@@ -1,7 +1,5 @@
 package payment
 
-import "github.com/google/uuid"
-
 type PayloadInit struct {
 	Email    string   `json:"email"`
 	Amount   string   `json:"amount"`
@@ -10,8 +8,8 @@ type PayloadInit struct {
 }
 
 type Metadata struct {
-	Email  string    `json:"ticket_id"`
-	UserID uuid.UUID `json:"user_id"`
+	Email  string `json:"email"`
+	UserID string `json:"user_id"`
 }
 
 type Payload struct {

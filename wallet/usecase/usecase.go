@@ -31,6 +31,6 @@ func (*walletUsecase) WithdrawalExample(userId uuid.UUID, amount int, callback f
 }
 
 func NewWalletUsecase(repo repositories_wallet.WalletRepo,
-	userRepo repositories_users.UserAuthentication, config util.Config) WalletUsecase {
-	return &walletUsecase{walletRepo: repo, userRepo: userRepo, config: config}
+	userRepo repositories_users.UserAuthentication, config util.Config, pay payment.PaymentInterface) WalletUsecase {
+	return &walletUsecase{walletRepo: repo, userRepo: userRepo, config: config, pay: pay}
 }
