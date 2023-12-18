@@ -69,6 +69,7 @@ CREATE TABLE "schedule_transactions" (
   "user_id" uuid,
   "scheduled_payment_id" uuid,
   "reference" varchar,
+  "paid_period":int
   "amount" int,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz NOT NULL DEFAULT now(),
