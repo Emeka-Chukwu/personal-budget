@@ -61,6 +61,7 @@ func (server *Server) Start(address string) error {
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
+	// Custom 404 handler
 
 	router.POST("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -68,6 +69,14 @@ func (server *Server) setupRouter() {
 		})
 	})
 	groupRouter := router.Group("/api/v1")
+
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":       "Resource not found",
+			"route":       c.Request.URL.Path,
+			"status_code": 404,
+		})
+	})
 
 	////payment
 	payInterface := payment.NewPastackPayment(server.config)

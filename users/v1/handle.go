@@ -2,6 +2,7 @@ package users_v1
 
 import (
 	"net/http"
+	banks_data "personal-budget/bank/data"
 	model_user "personal-budget/users/models"
 	usecase_user "personal-budget/users/usecase"
 	"personal-budget/util"
@@ -13,10 +14,29 @@ import (
 type UserHandler interface {
 	LoginUser(ctx *gin.Context)
 	RegisterUser(ctx *gin.Context)
+	FetchBanks(ctx *gin.Context)
+	FetchBankById(ctx *gin.Context)
 }
 
 type userhandler struct {
 	usecase usecase_user.UsecaseUser
+}
+
+// FetchBankById implements UserHandler.
+func (*userhandler) FetchBankById(ctx *gin.Context) {
+	params := util.GetUrlParams[BankParam](ctx)
+	data := banks_data.FetchBankById(params.ID)
+	if data == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"data": data})
+}
+
+// FetchBanks implements UserHandler.
+func (*userhandler) FetchBanks(ctx *gin.Context) {
+	data := banks_data.PaystackBanks
+	ctx.JSON(http.StatusOK, gin.H{"data": data})
 }
 
 // LoginUser implements UserHandler.
@@ -54,4 +74,8 @@ func (handler *userhandler) RegisterUser(ctx *gin.Context) {
 
 func NewUserHandler(usecase usecase_user.UsecaseUser) UserHandler {
 	return &userhandler{usecase: usecase}
+}
+
+type BankParam struct {
+	ID int64 `uri:"id" binding:"required"`
 }

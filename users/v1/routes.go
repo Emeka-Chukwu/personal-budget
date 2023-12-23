@@ -13,4 +13,6 @@ func NewUserRoutes(router *gin.RouterGroup, usecase usecase_user.UsecaseUser) {
 	route := router.Group("/auths")
 	route.POST("/register", middleware.ValidatorMiddleware[model_user.User], userHandler.RegisterUser)
 	route.POST("/login", middleware.ValidatorMiddleware[model_user.UserLogin], userHandler.LoginUser)
+	route.GET("/banks", userHandler.FetchBanks)
+	route.GET("/banks/:id", userHandler.FetchBankById)
 }
