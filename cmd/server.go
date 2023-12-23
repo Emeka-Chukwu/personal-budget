@@ -63,7 +63,7 @@ func (server *Server) setupRouter() {
 	router := gin.Default()
 	// Custom 404 handler
 
-	router.POST("/", func(ctx *gin.Context) {
+	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": fmt.Sprintf("Personal Budget app ruuning at %s", server.config.HTTPServerAddress),
 		})
