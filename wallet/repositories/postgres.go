@@ -14,6 +14,7 @@ type WalletRepo interface {
 	// WithdrawalExample(userId uuid.UUID, amount int, callback func(userId uuid.UUID, amount int) error) error
 	Fetch(userId uuid.UUID) (wallet_model.Wallet, error)
 	Transfer(fromUserId, toUserId uuid.UUID, amount int) error
+	DebitFromWalletTx(userId uuid.UUID, amount int) (*sql.Tx, error)
 }
 
 type walletRepo struct {
