@@ -99,8 +99,10 @@ CREATE TABLE "payment_pins" (
 CREATE TABLE "scheduled_payments" (
   "id" uuid DEFAULT uuid_generate_v4(),
   "user_id" uuid,
+  "account_id" uuid,
   "amount" int,
   "periods" int,
+  "duration" int, -- duration is in days
   "paid_period" int,
   "paydate" timestamptz,
   "is_completed" boolean DEFAULT false,
@@ -120,6 +122,7 @@ ALTER TABLE "verifications" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id"
 ALTER TABLE "payment_pins" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "scheduled_payments" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "scheduled_payments" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id");
 
 ALTER TABLE "wallets" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 ALTER TABLE "schedule_transactions" ADD FOREIGN KEY ("scheduled_payment_id") REFERENCES "scheduled_payments" ("id");
