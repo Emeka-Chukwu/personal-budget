@@ -4,6 +4,7 @@ import (
 	"errors"
 	schedule_payment_model "personal-budget/schedule/model"
 	"personal-budget/shared"
+	"time"
 )
 
 // CreatePlanTx implements ScheduledPaymentsUsecase.
@@ -15,6 +16,11 @@ func (p *scheduledPaymentsUsecase) CreatePlanTx(req schedule_payment_model.Sched
 	if account.UserId != req.UserId {
 		return schedule_payment_model.SchedulePayment{}, errors.New("access denied")
 	}
+	noOfDays := int(req.Duration / req.Periods)
+	noOfHours := req.Duration % req.Periods
+	payDate := time.Now().AddDate(0, 0, noOfDays)
+	payDate = payDate.Add(time.Hour * time.Duration(noOfHours))
+	req.PayDate = payDate
 	wallet, err := p.walletsRepo.Fetch(req.UserId)
 	if err != nil {
 		return schedule_payment_model.SchedulePayment{}, err
@@ -22,7 +28,7 @@ func (p *scheduledPaymentsUsecase) CreatePlanTx(req schedule_payment_model.Sched
 	if req.Amount+shared.ScheduledPaymentCharge > wallet.Balance {
 		return schedule_payment_model.SchedulePayment{}, errors.New("insufficient balance")
 	}
-	tx, err := p.walletsRepo.DebitFromWalletTx(req.UserId, req.Amount)
+	tx, err := p.walletsRepo.DebitFromWalletTx(req.UserId, req.Amount+shared.ScheduledPaymentCharge)
 	if err != nil {
 		tx.Rollback()
 		return schedule_payment_model.SchedulePayment{}, err
