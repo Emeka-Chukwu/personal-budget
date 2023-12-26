@@ -50,7 +50,7 @@ func (p *scheduledPaymentHandler) FetchPlan(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": resp})
+	c.JSON(http.StatusOK, gin.H{"data": resp})
 }
 
 // ListPlan implements ScheduledPaymentHandler.
@@ -62,7 +62,7 @@ func (p *scheduledPaymentHandler) ListPlan(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": resp})
+	c.JSON(http.StatusOK, gin.H{"data": resp})
 }
 
 func NewScheduledPaymentHandler(usecase schedule_payment_usecase.ScheduledPaymentsUsecase) ScheduledPaymentHandler {
