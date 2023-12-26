@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewUserRoutes(router *gin.RouterGroup, usecase schedule_payment_usecase.ScheduledPaymentsUsecase) {
+func NewScheduledPaymentRoutes(router *gin.RouterGroup, usecase schedule_payment_usecase.ScheduledPaymentsUsecase) {
 	planHandler := NewScheduledPaymentHandler(usecase)
 	route := router.Group("/plans")
 	route.POST("/create", middleware.ValidatorMiddleware[schedule_payment_model.SchedulePayment], planHandler.CreatePlanTx)

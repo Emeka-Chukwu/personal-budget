@@ -44,7 +44,8 @@ func (p *scheduledPaymentHandler) CreatePlanTx(c *gin.Context) {
 // FetchPlan implements ScheduledPaymentHandler.
 func (p *scheduledPaymentHandler) FetchPlan(c *gin.Context) {
 	params := util.GetUrlParams[ParamID](c)
-	resp, err := p.usecase.FetchPlan(params.ID)
+	paramsId, _ := uuid.Parse(params.ID)
+	resp, err := p.usecase.FetchPlan(paramsId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -69,5 +70,5 @@ func NewScheduledPaymentHandler(usecase schedule_payment_usecase.ScheduledPaymen
 }
 
 type ParamID struct {
-	ID uuid.UUID `uri:"id" binding:"required"`
+	ID string `uri:"id" binding:"required"`
 }

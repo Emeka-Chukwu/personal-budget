@@ -3,6 +3,7 @@ package schedule_payment_usecase
 import (
 	"errors"
 	schedule_payment_model "personal-budget/schedule/model"
+	"personal-budget/shared"
 )
 
 // CreatePlanTx implements ScheduledPaymentsUsecase.
@@ -13,6 +14,13 @@ func (p *scheduledPaymentsUsecase) CreatePlanTx(req schedule_payment_model.Sched
 	}
 	if account.UserId != req.UserId {
 		return schedule_payment_model.SchedulePayment{}, errors.New("access denied")
+	}
+	wallet, err := p.walletsRepo.Fetch(req.UserId)
+	if err != nil {
+		return schedule_payment_model.SchedulePayment{}, err
+	}
+	if req.Amount+shared.ScheduledPaymentCharge > wallet.Balance {
+		return schedule_payment_model.SchedulePayment{}, errors.New("insufficient balance")
 	}
 	tx, err := p.walletsRepo.DebitFromWalletTx(req.UserId, req.Amount)
 	if err != nil {

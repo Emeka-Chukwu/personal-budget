@@ -9,6 +9,9 @@ import (
 	account_v1 "personal-budget/accounts/v1"
 	"personal-budget/middleware"
 	"personal-budget/payment"
+	schedule_payment_respositories "personal-budget/schedule/repositories"
+	schedule_payment_usecase "personal-budget/schedule/usecase"
+	schedule_payment_v1 "personal-budget/schedule/v1"
 	"personal-budget/token"
 	repositories_transaction "personal-budget/transactions/repositories"
 	usecases_transaction "personal-budget/transactions/usecases"
@@ -110,6 +113,11 @@ func (server *Server) setupRouter() {
 	//////// wallets
 	walletUse := usecase_wallet.NewWalletUsecase(walletRepo, userRepo, server.config, payInterface)
 	wallet_v1.NewWalletRoutes(groupRouter, transUsecase, walletUse, payInterface, acctCase, userCase)
+
+	//////// Scheduled Payments
+	plansRepo := schedule_payment_respositories.NewSchedulePaymentRepositories(server.conn)
+	planUsecase := schedule_payment_usecase.NewScheduledPaymentsUsecase(plansRepo, walletRepo, acctRepo)
+	schedule_payment_v1.NewScheduledPaymentRoutes(groupRouter, planUsecase)
 
 	server.router = router
 }

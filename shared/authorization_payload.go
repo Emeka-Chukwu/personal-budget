@@ -8,6 +8,7 @@ import (
 
 var (
 	authorizationPayloadKey = "authorization_payload"
+	ScheduledPaymentCharge  = 200
 )
 
 func GetAuthsPayload(ctx *gin.Context) *token.Payload {
