@@ -15,7 +15,7 @@ func (p *schedulePaymentRepositories) FetchPlan(id uuid.UUID) (schedule_payment_
 	defer cancel()
 	stmt := `
 	Select scheduled_payments.id, scheduled_payments.user_id, scheduled_payments.account_id, 
-	scheduled_payments.amount, scheduled_payments.periods,scheduled_payments.paid_period, 
+	scheduled_payments.amount, scheduled_payments.periods,scheduled_payments.paid_periods, 
 	scheduled_payments.paydate, scheduled_payments.duration, scheduled_payments.is_completed, 
 	scheduled_payments.created_at, scheduled_payments.updated_at, json_agg(st.*) as transactions from scheduled_payments
 	Left Join schedule_transactions st on st.scheduled_payment_id = scheduled_payments.id

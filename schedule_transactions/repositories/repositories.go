@@ -15,6 +15,7 @@ type ScheduledTransactionRepo interface {
 	UpdateUserTransaction(reference, status string) (model_scheduled_transactions.ScheduledTransaction, error)
 	GetUserTransactionByReference(reference string) (model_scheduled_transactions.ScheduledTransaction, error)
 	UpdateUserTransactionType(reference string, typeD string) (model_scheduled_transactions.ScheduledTransaction, error)
+	CreateUserTransactionTx(req model_scheduled_transactions.ScheduledTransaction, tx *sql.Tx) (model_scheduled_transactions.ScheduledTransaction, *sql.Tx, error)
 }
 
 type scheduledtransactionRepo struct {
