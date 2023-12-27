@@ -11,6 +11,7 @@ import (
 	schedule_payment_respositories "personal-budget/schedule/repositories"
 	model_scheduled_transactions "personal-budget/schedule_transactions/model"
 	repositories_scheduled_transactions "personal-budget/schedule_transactions/repositories"
+	"personal-budget/shared"
 	"syscall"
 	"time"
 )
@@ -69,6 +70,8 @@ func (work *WorkerScheduler) execute() {
 				}
 				work.scheduleTxnRepo.CreateUserTransactionTx(transModel, tx)
 				plan.PaidPeriods = plan.PaidPeriods + 1
+				plan.Amount = plan.PaidPeriods + 1
+				plan.PayDate = shared.GetNewDate(plan.Duration, plan.Periods)
 				if plan.PaidPeriods == plan.Periods {
 					plan.IsCompleted = true
 				}
