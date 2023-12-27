@@ -13,6 +13,8 @@ type SchedulePaymentRepositories interface {
 	ListPlan(userId uuid.UUID) ([]schedule_payment_model.SchedulePaymentPlan, error)
 	CreatePlanTx(req schedule_payment_model.SchedulePayment, tx *sql.Tx) (schedule_payment_model.SchedulePayment, *sql.Tx, error)
 	UpdatePlanTx(model schedule_payment_model.SchedulePayment, tx *sql.Tx) (schedule_payment_model.SchedulePayment, *sql.Tx, error)
+	FetchPlansRecords(batchSize int, processedRows int, tx *sql.Tx) ([]schedule_payment_model.SchedulePayment, error)
+	FetchPlansRecordsCounter() (int, error)
 }
 type schedulePaymentRepositories struct {
 	Db *sql.DB
