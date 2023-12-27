@@ -33,3 +33,10 @@ type SchedulePaymentPlan struct {
 	Transactions json.RawMessage `json:"transactions"`
 	// Transactions []model_scheduled_transactions.ScheduledTransaction `json:"transactions"`
 }
+
+type SchedulePaymentAccount struct {
+	SchedulePayment
+	RecipientCode string `json:"recipient_code"`
+}
+
+// recipient_code

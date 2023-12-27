@@ -31,16 +31,21 @@ func (p *schedulePaymentRepositories) FetchPlan(id uuid.UUID) (schedule_payment_
 	return model, err
 }
 
-func (p *schedulePaymentRepositories) FetchPlansRecords(batchSize int, processedRows int, tx *sql.Tx) ([]schedule_payment_model.SchedulePayment, error) {
+func (p *schedulePaymentRepositories) FetchPlansRecords(batchSize int, processedRows int, tx *sql.Tx) ([]schedule_payment_model.SchedulePaymentAccount, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), util.DbTimeout)
 	defer cancel()
-	stmt := `Select id, user_id, account_id ,amount,periods,paid_periods,paydate,duration, is_completed,created_at, updated_at from scheduled_payments where is_completed <> true and (paydate  BETWEEN NOW() - INTERVAL '3 hours' AND NOW()+ INTERVAL '3 hours') 
+	stmt := `
+	Select scheduled_payments.id, scheduled_payments.user_id, scheduled_payments.account_id,scheduled_payments.amount,periods, scheduled_payments.paid_periods, scheduled_payments.paydate,
+	scheduled_payments.duration, scheduled_payments.is_completed,scheduled_payments.created_at, scheduled_payments.updated_at, recipient_code from scheduled_payments 
+	Join accounts at on at.user_id =scheduled_payments.user_id
+	where is_completed <> true and (paydate  BETWEEN NOW() - INTERVAL '3 hours' AND NOW()+ INTERVAL '3 hours')
+    Group by scheduled_payments.id, recipient_code 
 	 limit $1 offset $2 `
 	rows, err := tx.QueryContext(ctx, stmt, batchSize, processedRows)
 	defer rows.Close()
-	var models []schedule_payment_model.SchedulePayment
+	var models []schedule_payment_model.SchedulePaymentAccount
 	for rows.Next() {
-		var model schedule_payment_model.SchedulePayment
+		var model schedule_payment_model.SchedulePaymentAccount
 		rows.Scan(&model.ID, &model.UserId, &model.AccountId, &model.Amount, &model.Periods, &model.PaidPeriods, &model.PayDate, &model.Duration, &model.IsCompleted, &model.CreatedAt, &model.UpdatedAt)
 		models = append(models, model)
 	}

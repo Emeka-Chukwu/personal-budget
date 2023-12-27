@@ -2,87 +2,111 @@ package worker
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	repositories_account "personal-budget/accounts/repositories"
+	"personal-budget/payment"
 	schedule_payment_respositories "personal-budget/schedule/repositories"
+	model_scheduled_transactions "personal-budget/schedule_transactions/model"
 	repositories_scheduled_transactions "personal-budget/schedule_transactions/repositories"
+	"syscall"
+	"time"
 )
 
 type WorkerScheduler struct {
 	DB              *sql.DB
 	scheduleTxnRepo repositories_scheduled_transactions.ScheduledTransactionRepo
 	schedulerRepo   schedule_payment_respositories.SchedulePaymentRepositories
+	accountRepo     repositories_account.AccountRepository
+	payService      payment.PaymentInterface
 }
 
 func NewWorkerScheduler(DB *sql.DB,
 	scheduleTxnRepo repositories_scheduled_transactions.ScheduledTransactionRepo,
-	schedulerRepo schedule_payment_respositories.SchedulePaymentRepositories) WorkerScheduler {
-	return WorkerScheduler{DB: DB, scheduleTxnRepo: scheduleTxnRepo, schedulerRepo: schedulerRepo}
+	schedulerRepo schedule_payment_respositories.SchedulePaymentRepositories, accountRepo repositories_account.AccountRepository,
+	payService payment.PaymentInterface) WorkerScheduler {
+	return WorkerScheduler{DB: DB, scheduleTxnRepo: scheduleTxnRepo, schedulerRepo: schedulerRepo, payService: payService, accountRepo: accountRepo}
 }
 
 func (work *WorkerScheduler) execute() {
-	// tx, err := work.DB.Begin()
+	batchSize := 100
+	total, _ := work.schedulerRepo.FetchPlansRecordsCounter()
+	var processedRows int64 = 0
+	for processedRows < int64(total) {
+		tx, err := work.DB.Begin()
+		if err != nil {
+			tx.Rollback()
+			log.Println(err)
+		}
+		resp, err := work.schedulerRepo.FetchPlansRecords(batchSize, int(processedRows), tx)
+		if err != nil {
+			tx.Rollback()
+			log.Println(err)
+		}
+
+		for _, plan := range resp {
+			var dateString string = time.Now().Local().UTC().GoString()
+			reference := fmt.Sprintf("plan-payment-%s", dateString)
+			if plan.RecipientCode != "" {
+				amount := plan.Amount / plan.Periods
+				paymentPayload := payment.InitiateTransfer{Source: "source",
+					Reason: "Reason", Amount: 9999, Recipient: plan.RecipientCode}
+				transModel := model_scheduled_transactions.ScheduledTransaction{
+					Type:              "plan",
+					Status:            "pending",
+					UserID:            plan.UserId,
+					SchedulePaymentID: plan.ID,
+					PaidPeriod:        plan.PaidPeriods + 1,
+					Reference:         reference,
+					Amount:            amount,
+				}
+				_, err = work.payService.Create(paymentPayload)
+				if err != nil {
+					tx.Rollback()
+					log.Println(err)
+				}
+				work.scheduleTxnRepo.CreateUserTransactionTx(transModel, tx)
+				plan.PaidPeriods = plan.PaidPeriods + 1
+				if plan.PaidPeriods == plan.Periods {
+					plan.IsCompleted = true
+				}
+				work.schedulerRepo.UpdatePlanTx(plan.SchedulePayment, tx)
+			}
+		}
+		if err = tx.Commit(); err != nil {
+			tx.Rollback()
+			log.Println(err)
+		}
+		processedRows += int64(len(resp))
+		fmt.Printf("Processed %d/%d rows\n", processedRows, total)
+
+	}
 
 }
 
-// func VerifierScheduler() {
-
-// 	batchSize := 100
-
-// 	var totalRows int64
-// 	database.Db.Model(&Employee{}).
-// 		Where("NOW() - employees.updated_at > interval '6 hours' AND house_address_verification_status = ?", "processing").
-// 		Joins("join survey_questions sq on sq.employee_id = employees.id").
-// 		Count(&totalRows)
-// 	var processedRows int64 = 0
-// 	for processedRows < totalRows {
-// 		tx := database.Db.Begin()
-
-// 		var employees []Employee
-// 		tx.Where("NOW() - employees.updated_at > interval '6 hours' AND house_address_verification_status = ?", "processing").
-// 			Joins("join survey_questions sq on sq.employee_id = employees.id").
-// 			Limit(batchSize).
-// 			Offset(int(processedRows)).
-// 			Find(&employees)
-
-// 		for _, employee := range employees {
-// 			employee.HouseAddressVerificationStatus = "pending"
-// 			employee.VerifierID = 0
-// 			tx.Save(&employee)
-
-// 			tx.Exec("UPDATE survey_questions SET updated_at= NOW(), verifier_ward=?, verifier_ward_status=?, verifier_lga=?, verifier_lga_status=?, verifier_district=?, verifier_district_status=? where employee_id=?", 0, "", 0, "", 0, "", employee.ID)
-// 		}
-// 		if tx.Error != nil {
-// 			tx.Rollback()
-// 			log.Println(tx.Error)
-// 		}
-
-// 		tx.Commit()
-// 		processedRows += int64(len(employees))
-// 		fmt.Printf("Processed %d/%d rows\n", processedRows, totalRows)
-// 	}
-// }
-
-// func ServeScheduler() {
-// 	interval := 1 * time.Hour
-// 	sigCh := make(chan os.Signal, 1)
-// 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-// 	stopCh := make(chan struct{})
-// 	go func() {
-// 		for {
-// 			select {
-// 			case <-time.After(interval):
-// 				VerifierScheduler()
-// 				fmt.Println("Task executed at", time.Now())
-// 			case <-sigCh:
-// 				fmt.Println("Received termination signal. Exiting...")
-// 				close(stopCh)
-// 				return
-// 			}
-// 		}
-// 	}()
-
-// 	select {
-// 	case <-stopCh:
-// 		fmt.Println("Task stopped. Exiting...")
-// 		os.Exit(0)
-// 	}
-// }
+func (work *WorkerScheduler) ServeScheduler() {
+	interval := 1 * time.Hour
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	stopCh := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-time.After(interval):
+				work.execute()
+				fmt.Println("Task executed at", time.Now())
+			case <-sigCh:
+				fmt.Println("Received termination signal. Exiting...")
+				close(stopCh)
+				return
+			}
+		}
+	}()
+	select {
+	case <-stopCh:
+		fmt.Println("Task stopped. Exiting...")
+		os.Exit(0)
+	}
+}
