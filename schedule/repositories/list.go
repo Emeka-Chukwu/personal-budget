@@ -3,6 +3,7 @@ package schedule_payment_respositories
 import (
 	"context"
 	schedule_payment_model "personal-budget/schedule/model"
+	"personal-budget/shared"
 	"personal-budget/util"
 
 	"github.com/google/uuid"
@@ -29,7 +30,7 @@ func (p *schedulePaymentRepositories) ListPlan(userId uuid.UUID) ([]schedule_pay
 		var model schedule_payment_model.SchedulePaymentPlan
 		rows.Scan(&model.ID, &model.UserId, &model.AccountId, &model.Amount, &model.Periods, &model.PaidPeriods, &model.PayDate, &model.Duration, &model.IsCompleted, &model.CreatedAt, &model.UpdatedAt, &model.Transactions)
 		if len(model.Transactions) < 8 {
-			model.Transactions = nil
+			model.Transactions = shared.JsonRawMessage
 		}
 		models = append(models, model)
 	}
