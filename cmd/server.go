@@ -12,6 +12,9 @@ import (
 	schedule_payment_respositories "personal-budget/schedule/repositories"
 	schedule_payment_usecase "personal-budget/schedule/usecase"
 	schedule_payment_v1 "personal-budget/schedule/v1"
+	repositories_scheduled_transactions "personal-budget/schedule_transactions/repositories"
+	usecases_scheduled_transactions "personal-budget/schedule_transactions/usecases"
+	transaction_scheduled_v1 "personal-budget/schedule_transactions/v1"
 	"personal-budget/token"
 	repositories_transaction "personal-budget/transactions/repositories"
 	usecases_transaction "personal-budget/transactions/usecases"
@@ -25,6 +28,7 @@ import (
 	wallet_v1 "personal-budget/wallet/v1"
 	webhook_usecase "personal-budget/webhook/usecase"
 	webhook_v1 "personal-budget/webhook/v1"
+	"personal-budget/worker"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -110,6 +114,11 @@ func (server *Server) setupRouter() {
 	transUsecase := usecases_transaction.NewTransactionUsecase(transRepo)
 	transaction_v1.NewTransactionRoutes(groupRouter, transUsecase)
 
+	////// schedule transaction
+	scheduledTransRepo := repositories_scheduled_transactions.NewTransactionRepo(server.conn)
+	schedusecase := usecases_scheduled_transactions.NewTransactionUsecase(scheduledTransRepo)
+	transaction_scheduled_v1.NewTransactionRoutes(groupRouter, schedusecase)
+
 	//////// wallets
 	walletUse := usecase_wallet.NewWalletUsecase(walletRepo, userRepo, server.config, payInterface)
 	wallet_v1.NewWalletRoutes(groupRouter, transUsecase, walletUse, payInterface, acctCase, userCase)
@@ -118,6 +127,9 @@ func (server *Server) setupRouter() {
 	plansRepo := schedule_payment_respositories.NewSchedulePaymentRepositories(server.conn)
 	planUsecase := schedule_payment_usecase.NewScheduledPaymentsUsecase(plansRepo, walletRepo, acctRepo)
 	schedule_payment_v1.NewScheduledPaymentRoutes(groupRouter, planUsecase)
+
+	workerScheduler := worker.NewWorkerScheduler(server.conn, scheduledTransRepo, plansRepo, acctRepo, payInterface)
+	go workerScheduler.ServeScheduler()
 
 	server.router = router
 }

@@ -1,4 +1,4 @@
-package usecases_transaction
+package usecases_scheduled_transactions
 
 // import "personal-budget/payment"
 

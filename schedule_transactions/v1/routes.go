@@ -1,14 +1,14 @@
-package transaction_v1
+package transaction_scheduled_v1
 
 import (
-	usecases_transaction "personal-budget/transactions/usecases"
+	usecases_scheduled_transactions "personal-budget/schedule_transactions/usecases"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewTransactionRoutes(router *gin.RouterGroup, usecase usecases_transaction.TransactionUsecase) {
+func NewTransactionRoutes(router *gin.RouterGroup, usecase usecases_scheduled_transactions.TransactionUsecase) {
 	transHandler := NewTransactionHandler(usecase)
-	route := router.Group("/transactions")
+	route := router.Group("/scheduled-transactions")
 	route.GET("/list", transHandler.GetUserTransactions)
 
 }

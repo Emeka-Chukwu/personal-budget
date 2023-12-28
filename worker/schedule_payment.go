@@ -90,7 +90,7 @@ func (work *WorkerScheduler) execute() {
 }
 
 func (work *WorkerScheduler) ServeScheduler() {
-	interval := 1 * time.Hour
+	interval := 5 * time.Second
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	stopCh := make(chan struct{})

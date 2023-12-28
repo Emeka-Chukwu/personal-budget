@@ -1,12 +1,12 @@
-package usecases_transaction
+package usecases_scheduled_transactions
 
 import (
-	model_transaction "personal-budget/transactions/model"
+	model_scheduled_transactions "personal-budget/schedule_transactions/model"
 
 	"github.com/google/uuid"
 )
 
 // GetUserTransactions implements TransactionUsecase.
-func (t *transactionUsecase) GetUserTransactions(userId uuid.UUID) ([]model_transaction.Transaction, error) {
+func (t *transactionUsecase) GetUserTransactions(userId uuid.UUID) ([]model_scheduled_transactions.ScheduledTransaction, error) {
 	return t.repo.GetUserTransactions(userId)
 }

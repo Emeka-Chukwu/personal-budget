@@ -1,15 +1,15 @@
-package transaction_v1
+package transaction_scheduled_v1
 
 import (
 	"net/http"
+	usecases_scheduled_transactions "personal-budget/schedule_transactions/usecases"
 	"personal-budget/token"
-	usecases_transaction "personal-budget/transactions/usecases"
 
 	"github.com/gin-gonic/gin"
 )
 
 type transactionHandler struct {
-	usecase usecases_transaction.TransactionUsecase
+	usecase usecases_scheduled_transactions.TransactionUsecase
 }
 
 // GetUserTransactions implements TransactionHandler.
@@ -27,6 +27,6 @@ type TransactionHandler interface {
 	GetUserTransactions(ctx *gin.Context)
 }
 
-func NewTransactionHandler(usecase usecases_transaction.TransactionUsecase) TransactionHandler {
+func NewTransactionHandler(usecase usecases_scheduled_transactions.TransactionUsecase) TransactionHandler {
 	return &transactionHandler{usecase: usecase}
 }
