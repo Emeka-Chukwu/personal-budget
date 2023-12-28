@@ -3,6 +3,8 @@ package worker
 import (
 	"database/sql"
 	"fmt"
+
+	// "fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -48,8 +50,9 @@ func (work *WorkerScheduler) execute() {
 		}
 
 		for _, plan := range resp {
-			var dateString string = time.Now().Local().UTC().GoString()
+			var dateString string = time.Now().Local().UTC().String()
 			reference := fmt.Sprintf("plan-payment-%s", dateString)
+
 			if plan.RecipientCode != "" {
 				amount := plan.Amount / plan.Periods
 				paymentPayload := payment.InitiateTransfer{Source: "source",
@@ -63,10 +66,11 @@ func (work *WorkerScheduler) execute() {
 					Reference:         reference,
 					Amount:            amount,
 				}
-				_, err = work.payService.Create(paymentPayload)
+				_, err := work.payService.Create(paymentPayload)
 				if err != nil {
 					tx.Rollback()
 					log.Println(err)
+					continue
 				}
 				work.scheduleTxnRepo.CreateUserTransactionTx(transModel, tx)
 				plan.PaidPeriods = plan.PaidPeriods + 1

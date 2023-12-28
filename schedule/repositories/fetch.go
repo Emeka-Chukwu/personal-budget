@@ -42,11 +42,10 @@ func (p *schedulePaymentRepositories) FetchPlansRecords(batchSize int, processed
     Group by scheduled_payments.id, recipient_code 
 	 limit $1 offset $2 `
 	rows, err := tx.QueryContext(ctx, stmt, batchSize, processedRows)
-	defer rows.Close()
 	var models []schedule_payment_model.SchedulePaymentAccount
 	for rows.Next() {
 		var model schedule_payment_model.SchedulePaymentAccount
-		rows.Scan(&model.ID, &model.UserId, &model.AccountId, &model.Amount, &model.Periods, &model.PaidPeriods, &model.PayDate, &model.Duration, &model.IsCompleted, &model.CreatedAt, &model.UpdatedAt)
+		rows.Scan(&model.ID, &model.UserId, &model.AccountId, &model.Amount, &model.Periods, &model.PaidPeriods, &model.PayDate, &model.Duration, &model.IsCompleted, &model.CreatedAt, &model.UpdatedAt, &model.RecipientCode)
 		models = append(models, model)
 	}
 	return models, err
