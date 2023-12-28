@@ -34,7 +34,7 @@ func (p *scheduledtransactionRepo) GetUserTransactionByReference(reference strin
 func (p *scheduledtransactionRepo) GetUserTransactions(userId uuid.UUID) ([]model_scheduled_transactions.ScheduledTransaction, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), util.DbTimeout)
 	defer cancel()
-	stmt := `select id, type, status, user_id, reference, amount, paid_periods, created_at, updated_at from transactions where reference=$1`
+	stmt := `select id, type, status, user_id, reference, amount, paid_periods, created_at, updated_at from schedule_transactions where reference=$1`
 	rows, err := p.DB.QueryContext(ctx, stmt, userId)
 	results := make([]model_scheduled_transactions.ScheduledTransaction, 0)
 	for rows.Next() {
