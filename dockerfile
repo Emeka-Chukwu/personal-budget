@@ -9,8 +9,8 @@ RUN go mod download
 
 COPY . ./
 
-RUN go build -o /identigo-api
+RUN go build -o /personal-budget
 
 EXPOSE 8080
 
-CMD [ "/identigo-api" ]
+CMD [ "/personal-budget" ]
